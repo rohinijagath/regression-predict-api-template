@@ -17,7 +17,7 @@
 
     Description: This file contains several functions used to abstract aspects
     of model interaction within the API. This includes loading a model from
-    file, data preprocessing, and model prediction.  
+    file, data preprocessing, and model prediction.
 
 """
 
@@ -51,16 +51,40 @@ def _preprocess_data(data):
     feature_vector_df = pd.DataFrame.from_dict([feature_vector_dict])
 
     # ---------------------------------------------------------------
-    # NOTE: You will need to swap the lines below for your own data
-    # preprocessing methods.
-    #
-    # The code below is for demonstration purposes only. You will not
-    # receive marks for submitting this code in an unchanged state.
-    # ---------------------------------------------------------------
+    # drop 14 unnecessary variables
+    to_drop = ['Order No',
+                'User Id',
+                'Vehicle Type',
+                'Platform Type',
+                'Placement - Day of Month',
+                'Placement - Weekday (Mo = 1)',
+                'Placement - Time',
+                'Confirmation - Day of Month',
+                'Confirmation - Weekday (Mo = 1)',
+                'Confirmation - Time',
+                'Arrival at Pickup - Day of Month',
+                'Arrival at Pickup - Weekday (Mo = 1)',
+                'Arrival at Pickup - Time',
+                'Rider Id']
 
-    # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[['Pickup Lat','Pickup Long',
-                                        'Destination Lat','Destination Long']]
+    df = feature_vector_df.copy()
+    df.drop(to_drop, axis = 1, inplace = True)
+
+    #encode categorical variables
+    df.loc[df['Personal or Business'] == 'Personal', 'Personal or Business'] = 1
+    df.loc[df['Personal or Business'] == 'Business', 'Personal or Business'] = 0
+
+    # converting object data types for Pickup Times to date_time
+    df['Pickup - Time'] = pd.to_datetime(df['Pickup - Time'])
+    df['Pickup - Time'] = df['Pickup - Time'].apply(lambda time: time.hour)
+
+    # fill precipitation null values with 0
+    df['Precipitation in millimeters'].fillna(0,inplace=True)
+
+    # impute temperature values by mean
+    df.Temperature.fillna(23.25,inplace=True)
+
+    predict_vector = df
     # ------------------------------------------------------------------------
 
     return predict_vector
