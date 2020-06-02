@@ -1,4 +1,4 @@
-# Team_1_Durban_Datanauts Flask-based Model API
+# Team_1_Durban_Datanauts - Flask-based Model API
 #### EXPLORE Data Science Academy Regression Predict
 
 ### Table of Contents
